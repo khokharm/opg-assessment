@@ -1,5 +1,6 @@
 import express, { type NextFunction, type Request, type Response } from "express";
 import { createHealthRouter } from "./routes/health";
+import weatherRouter from "./routes/weather";
 
 export const createApp = () => {
   const app = express();
@@ -10,6 +11,7 @@ export const createApp = () => {
   app.use(express.urlencoded({ extended: false }));
 
   app.use("/health", createHealthRouter());
+  app.use("/api", weatherRouter);
 
   app.use((_req, res) => {
     res.status(404).json({ error: "Not found" });
