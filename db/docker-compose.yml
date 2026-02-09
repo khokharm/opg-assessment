@@ -8,7 +8,7 @@ services:
     environment:
       MONGO_INITDB_DATABASE: weather_tracker
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
       - mongodb_data:/data/db
       - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import WeatherCardList from "@/components/WeatherCardList";
 import { SearchBar } from "@/components/SearchBar";
+import Header from "@/components/Header";
 
 export default function Home() {
   const weatherData = [
@@ -39,27 +40,30 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 py-8">
-      <div className="container mx-auto px-4">
-        <div className="mb-8 max-w-md mx-auto">
-          <h1 className="text-3xl font-bold text-center mb-4 text-gray-800">
-            Weather Dashboard
-          </h1>
-          <SearchBar
-            suggestions={citySuggestions}
-            onSearch={handleSearch}
-            onSelectSuggestion={handleSelectSuggestion}
-            placeholder="Search for a city..."
-            className="mb-2"
-          />
-          {selectedCity && (
-            <p className="text-sm text-gray-600 text-center">
-              Showing weather for: <span className="font-semibold">{selectedCity}</span>
-            </p>
-          )}
+    <>
+      <Header />
+      <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 py-8">
+        <div className="container mx-auto px-4">
+          <div className="mb-8 max-w-md mx-auto">
+            <h1 className="text-3xl font-bold text-center mb-4 text-gray-800">
+              Weather Dashboard
+            </h1>
+            <SearchBar
+              suggestions={citySuggestions}
+              onSearch={handleSearch}
+              onSelectSuggestion={handleSelectSuggestion}
+              placeholder="Search for a city..."
+              className="mb-2"
+            />
+            {selectedCity && (
+              <p className="text-sm text-gray-600 text-center">
+                Showing weather for: <span className="font-semibold">{selectedCity}</span>
+              </p>
+            )}
+          </div>
+          <WeatherCardList weatherData={filteredData} />
         </div>
-        <WeatherCardList weatherData={filteredData} />
       </div>
-    </div>
+    </>
   );
 }

@@ -1,19 +1,14 @@
-import { Router } from "express";
+import { Router } from 'express';
+
+const router = Router();
 
 /**
- * Creates the health-check router.
- * @returns An Express router exposing health endpoints.
+ * @route   GET /health
+ * @desc    Health check endpoint
+ * @access  Public
  */
-export const createHealthRouter = () => {
-  const router = Router();
+router.get('/', (_req, res) => {
+  res.json({ status: 'ok' });
+});
 
-  /**
-   * Health-check endpoint.
-   * GET /health -> returns 200 OK
-   */
-  router.get("/", (_req, res) => {
-    res.json({ status: "ok" });
-  });
-
-  return router;
-};
+export default router;

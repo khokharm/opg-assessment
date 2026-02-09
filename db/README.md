@@ -30,12 +30,12 @@ This folder contains the MongoDB Docker configuration for the Weather Tracker ap
 
 For local development:
 ```
-mongodb://localhost:27017/
+mongodb://localhost:27018/
 ```
 
 Or connect to specific database:
 ```
-mongodb://localhost:27017/weather_tracker
+mongodb://localhost:27018/weather_tracker
 ```
 
 ## Initialization
