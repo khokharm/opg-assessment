@@ -39,6 +39,12 @@ export async function register(
     body: JSON.stringify({ email, password, username }),
   });
 
+  // Check if response is JSON
+  const contentType = response.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/json')) {
+    throw new Error(`Server returned ${response.status}: Expected JSON response but got ${contentType}`);
+  }
+
   const data = await response.json();
 
   if (!response.ok) {
@@ -61,6 +67,12 @@ export async function login(email: string, password: string): Promise<AuthRespon
     body: JSON.stringify({ email, password }),
   });
 
+  // Check if response is JSON
+  const contentType = response.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/json')) {
+    throw new Error(`Server returned ${response.status}: Expected JSON response but got ${contentType}`);
+  }
+
   const data = await response.json();
 
   if (!response.ok) {
@@ -80,8 +92,14 @@ export async function logout(): Promise<void> {
   });
 
   if (!response.ok) {
-    const data = await response.json();
-    throw new Error(data.error || 'Failed to logout');
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      const data = await response.json();
+      throw new Error(data.error || 'Failed to logout');
+    } else {
+      throw new Error(`Server returned ${response.status}: Failed to logout`);
+    }
   }
 }
 
@@ -92,6 +110,12 @@ export async function getCurrentUser(): Promise<User> {
   const response = await fetch(`${API_BASE_URL}/auth/me`, {
     credentials: 'include', // Include cookies
   });
+
+  // Check if response is JSON
+  const contentType = response.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/json')) {
+    throw new Error(`Server returned ${response.status}: Expected JSON response but got ${contentType}`);
+  }
 
   const data = await response.json();
 
