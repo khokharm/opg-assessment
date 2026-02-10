@@ -14,6 +14,9 @@ const envSchema = z.object({
   // JWT configuration
   JWT_SECRET: z.string().min(32),
   JWT_EXPIRES_IN: z.string().default("7d"),
+  
+  // Logging configuration
+  LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace"]).default("info"),
 });
 
 // Parse and validate environment variables
@@ -44,6 +47,9 @@ export const config = {
   jwt: {
     secret: env.JWT_SECRET,
     expiresIn: env.JWT_EXPIRES_IN,
+  },
+  logging: {
+    level: env.LOG_LEVEL,
   },
 };
 

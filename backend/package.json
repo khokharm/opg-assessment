@@ -22,6 +22,9 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.23.0",
     "pg": "^8.18.0",
+    "pino": "^8.21.0",
+    "pino-http": "^9.0.0",
+    "pino-pretty": "^11.3.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {

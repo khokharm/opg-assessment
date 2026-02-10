@@ -1,6 +1,9 @@
 import { createApp } from "./app";
 import { config } from "./config";
 import { connectToMongoDB, closeMongoDB } from "./db/connection";
+import { createLogger } from "./logger/LoggerFactory";
+
+const logger = createLogger("Server");
 
 const startServer = async () => {
   try {
@@ -11,16 +14,18 @@ const startServer = async () => {
     const app = createApp();
 
     const server = app.listen(config.port, () => {
-      console.log(`🚀 Server is running on port ${config.port}`);
-      console.log(`📝 Environment: ${config.nodeEnv}`);
+      logger.info("Server is running", {
+        port: config.port,
+        environment: config.nodeEnv,
+      });
     });
 
     // Graceful shutdown
     const shutdown = async () => {
-      console.log('\nShutting down gracefully...');
+      logger.info("Shutting down gracefully");
       
       server.close(() => {
-        console.log('HTTP server closed');
+        logger.info("HTTP server closed");
       });
 
       await closeMongoDB();
@@ -30,7 +35,10 @@ const startServer = async () => {
     process.on('SIGTERM', shutdown);
     process.on('SIGINT', shutdown);
   } catch (error) {
-    console.error('Failed to start server:', error);
+    logger.fatal("Failed to start server", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     process.exit(1);
   }
 };

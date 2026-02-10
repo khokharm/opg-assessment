@@ -1,12 +1,15 @@
 import mongoose from 'mongoose';
 import { config } from '../config';
+import { createLogger } from '../logger/LoggerFactory';
+
+const logger = createLogger('MongoDB');
 
 /**
  * Connect to MongoDB using Mongoose
  */
 export const connectToMongoDB = async (): Promise<typeof mongoose> => {
   try {
-    console.log('Connecting to MongoDB with Mongoose...');
+    logger.info('Connecting to MongoDB with Mongoose');
     
     await mongoose.connect(config.mongodb.url, {
       dbName: config.mongodb.dbName,
@@ -16,24 +19,32 @@ export const connectToMongoDB = async (): Promise<typeof mongoose> => {
       socketTimeoutMS: 45000,
     });
     
-    console.log(`✅ Successfully connected to MongoDB database: ${config.mongodb.dbName}`);
+    logger.info('Successfully connected to MongoDB', {
+      database: config.mongodb.dbName,
+    });
     
     // Handle connection events
     mongoose.connection.on('error', (error) => {
-      console.error('❌ MongoDB connection error:', error);
+      logger.error('MongoDB connection error', {
+        error: error.message,
+        stack: error.stack,
+      });
     });
 
     mongoose.connection.on('disconnected', () => {
-      console.log('MongoDB disconnected');
+      logger.warn('MongoDB disconnected');
     });
 
     mongoose.connection.on('reconnected', () => {
-      console.log('MongoDB reconnected');
+      logger.info('MongoDB reconnected');
     });
     
     return mongoose;
   } catch (error) {
-    console.error('❌ MongoDB connection error:', error);
+    logger.error('MongoDB connection failed', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     throw error;
   }
 };
@@ -44,9 +55,12 @@ export const connectToMongoDB = async (): Promise<typeof mongoose> => {
 export const closeMongoDB = async (): Promise<void> => {
   try {
     await mongoose.connection.close();
-    console.log('MongoDB connection closed');
+    logger.info('MongoDB connection closed');
   } catch (error) {
-    console.error('Error closing MongoDB connection:', error);
+    logger.error('Error closing MongoDB connection', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     throw error;
   }
 };
