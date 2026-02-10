@@ -7,6 +7,7 @@ import weatherRouter from "./routes/weather";
 import authRouter from "./routes/auth";
 import userCitiesRouter from "./routes/userCities";
 import { authenticate } from "./middleware/auth";
+import { config } from "./config";
 
 export const createApp = () => {
   const app = express();
@@ -22,10 +23,25 @@ export const createApp = () => {
   app.disable("x-powered-by");
 
   // CORS configuration - allow credentials
+  const allowedOrigins = config.cors.origins;
+
   app.use(
     cors({
-      origin: true, // Allow all origins in development, configure properly in production
+      origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps, Postman, curl)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error(`Origin ${origin} not allowed by CORS`));
+        }
+      },
       credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+      exposedHeaders: ['Set-Cookie'],
+      maxAge: 86400, // 24 hours
     })
   );
 

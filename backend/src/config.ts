@@ -17,6 +17,9 @@ const envSchema = z.object({
   
   // Logging configuration
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace"]).default("info"),
+  
+  // CORS configuration (comma-separated list of allowed origins)
+  CORS_ORIGINS: z.string().optional().default("http://localhost:3000,http://localhost:6006,http://127.0.0.1:3000,http://127.0.0.1:6006"),
 });
 
 // Parse and validate environment variables
@@ -50,6 +53,9 @@ export const config = {
   },
   logging: {
     level: env.LOG_LEVEL,
+  },
+  cors: {
+    origins: env.CORS_ORIGINS.split(",").map(origin => origin.trim()),
   },
 };
 
