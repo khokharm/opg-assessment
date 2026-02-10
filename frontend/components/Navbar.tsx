@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -25,12 +25,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 export default function Navbar() {
   const { user, loading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    // Trigger animation after component mounts
-    setIsVisible(true);
-  }, []);
 
   const getInitials = (username: string) => {
     return username
@@ -43,9 +37,7 @@ export default function Navbar() {
 
   return (
     <header 
-      className={`sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/80 transition-transform duration-1000 ease-out ${
-        isVisible ? 'translate-x-0' : '-translate-x-full'
-      }`}
+      className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/80"
     >
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
@@ -105,24 +97,6 @@ export default function Navbar() {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/dashboard" className="cursor-pointer">
-                        <svg
-                          className="mr-2 h-4 w-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                          />
-                        </svg>
-                        Dashboard
-                      </Link>
-                    </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link href="/" className="cursor-pointer">
                         <svg
@@ -212,54 +186,56 @@ export default function Navbar() {
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px] data-[state=open]:duration-5000 data-[state=closed]:duration-500">
+              <SheetContent side="right" className="w-[300px] sm:w-[400px] flex flex-col">
                 <SheetHeader>
-                  <SheetTitle className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-blue-600 to-indigo-600">
-                      <svg
-                        className="h-4 w-4 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"
-                        />
-                      </svg>
-                    </div>
-                    weather.ai
-                  </SheetTitle>
-                  <SheetDescription>
-                    AI-powered weather predictions
-                  </SheetDescription>
-                </SheetHeader>
-
-                <div className="mt-8 flex flex-col gap-4">
-                  {user && (
-                    <div className="flex items-center gap-3 rounded-lg bg-gray-100 p-4">
+                  {user ? (
+                    <SheetTitle className="flex items-center gap-3">
                       <Avatar className="h-12 w-12">
                         <AvatarFallback className="bg-linear-to-br from-blue-600 to-indigo-600 text-white font-semibold">
                           {getInitials(user.username)}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="flex flex-col">
-                        <p className="text-sm font-medium">{user.username}</p>
-                        <p className="text-xs text-muted-foreground">
+                      <div className="flex flex-col text-left">
+                        <p className="text-base font-semibold">{user.username}</p>
+                        <p className="text-xs text-muted-foreground font-normal">
                           {user.email || "user@example.com"}
                         </p>
                       </div>
-                    </div>
+                    </SheetTitle>
+                  ) : (
+                    <SheetTitle className="flex items-center gap-2">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-blue-600 to-indigo-600">
+                        <svg
+                          className="h-4 w-4 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"
+                          />
+                        </svg>
+                      </div>
+                      weather.ai
+                    </SheetTitle>
                   )}
+                  {!user && (
+                    <SheetDescription>
+                      AI-powered weather predictions
+                    </SheetDescription>
+                  )}
+                </SheetHeader>
 
+                <div className="mt-6 flex flex-col gap-4 flex-1">
                   <nav className="flex flex-col gap-2">
                     {user && (
                       <Link
-                        href="/dashboard"
+                        href="/"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-100"
+                        className="flex items-center gap-3 rounded-md px-4 py-3 text-sm font-medium hover:bg-gray-100"
                       >
                         <svg
                           className="h-5 w-5"
@@ -271,10 +247,16 @@ export default function Navbar() {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth={2}
-                            d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                           />
                         </svg>
-                        Dashboard
+                        Settings
                       </Link>
                     )}
 
@@ -284,7 +266,7 @@ export default function Navbar() {
                         <Link
                           href="/logout"
                           onClick={() => setMobileMenuOpen(false)}
-                          className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+                          className="flex items-center gap-3 rounded-md px-4 py-3 text-sm text-red-600 hover:bg-red-50"
                         >
                           <svg
                             className="h-5 w-5"
@@ -320,6 +302,32 @@ export default function Navbar() {
                     </div>
                   )}
                 </div>
+
+                {user && (
+                  <div className="mt-auto pt-4 border-t">
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-blue-600 to-indigo-600">
+                        <svg
+                          className="h-4 w-4 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm">weather.ai</p>
+                        <p className="text-xs text-muted-foreground">AI-powered weather predictions</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </SheetContent>
             </Sheet>
           </div>
