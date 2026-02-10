@@ -1,0 +1,367 @@
+{
+  "info": {
+    "name": "3rd Party API Integration Tests",
+    "description": "Integration tests for Nominatim (Geocoding) and NWS (Weather) APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Nominatim (Geocoding) API",
+      "item": [
+        {
+          "name": "Search US City - Seattle",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is an array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    pm.expect(jsonData.length).to.be.greaterThan(0);",
+                  "});",
+                  "",
+                  "pm.test('Results contain required location fields', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const firstResult = jsonData[0];",
+                  "    pm.expect(firstResult).to.have.property('lat');",
+                  "    pm.expect(firstResult).to.have.property('lon');",
+                  "    pm.expect(firstResult).to.have.property('display_name');",
+                  "    pm.expect(firstResult).to.have.property('address');",
+                  "});",
+                  "",
+                  "pm.test('Results are filtered to US only', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const firstResult = jsonData[0];",
+                  "    const displayName = firstResult.display_name.toLowerCase();",
+                  "    pm.expect(displayName).to.include('united states');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "WeatherApp/1.0 IntegrationTest"
+              }
+            ],
+            "url": {
+              "raw": "https://nominatim.openstreetmap.org/search?q=Seattle&format=json&addressdetails=1&countrycodes=us&limit=5",
+              "protocol": "https",
+              "host": [
+                "nominatim",
+                "openstreetmap",
+                "org"
+              ],
+              "path": [
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "Seattle"
+                },
+                {
+                  "key": "format",
+                  "value": "json"
+                },
+                {
+                  "key": "addressdetails",
+                  "value": "1"
+                },
+                {
+                  "key": "countrycodes",
+                  "value": "us"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            },
+            "description": "Search for Seattle using Nominatim API with US filter"
+          }
+        },
+        {
+          "name": "Search US City - Boston",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains results', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    pm.expect(jsonData.length).to.be.greaterThan(0);",
+                  "});",
+                  "",
+                  "pm.test('Coordinates are valid numbers', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const firstResult = jsonData[0];",
+                  "    const lat = parseFloat(firstResult.lat);",
+                  "    const lon = parseFloat(firstResult.lon);",
+                  "    pm.expect(lat).to.be.a('number').and.to.be.within(-90, 90);",
+                  "    pm.expect(lon).to.be.a('number').and.to.be.within(-180, 180);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "WeatherApp/1.0 IntegrationTest"
+              }
+            ],
+            "url": {
+              "raw": "https://nominatim.openstreetmap.org/search?q=Boston&format=json&addressdetails=1&countrycodes=us&limit=5",
+              "protocol": "https",
+              "host": [
+                "nominatim",
+                "openstreetmap",
+                "org"
+              ],
+              "path": [
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "Boston"
+                },
+                {
+                  "key": "format",
+                  "value": "json"
+                },
+                {
+                  "key": "addressdetails",
+                  "value": "1"
+                },
+                {
+                  "key": "countrycodes",
+                  "value": "us"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            },
+            "description": "Search for Boston using Nominatim API"
+          }
+        }
+      ]
+    },
+    {
+      "name": "NWS (Weather) API",
+      "item": [
+        {
+          "name": "Get Grid Points - Seattle",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains properties', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('properties');",
+                  "});",
+                  "",
+                  "pm.test('Properties contain forecast URL', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const props = jsonData.properties;",
+                  "    pm.expect(props).to.have.property('forecast');",
+                  "    pm.expect(props.forecast).to.include('https://api.weather.gov');",
+                  "});",
+                  "",
+                  "pm.test('Properties contain observation stations URL', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const props = jsonData.properties;",
+                  "    pm.expect(props).to.have.property('observationStations');",
+                  "    pm.expect(props.observationStations).to.include('https://api.weather.gov');",
+                  "});",
+                  "",
+                  "// Store forecast URL for next request",
+                  "const forecastUrl = pm.response.json().properties.forecast;",
+                  "pm.collectionVariables.set('forecastUrl', forecastUrl);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "WeatherApp/1.0 IntegrationTest"
+              },
+              {
+                "key": "Accept",
+                "value": "application/geo+json"
+              }
+            ],
+            "url": {
+              "raw": "https://api.weather.gov/points/47.6062,-122.3321",
+              "protocol": "https",
+              "host": [
+                "api",
+                "weather",
+                "gov"
+              ],
+              "path": [
+                "points",
+                "47.6062,-122.3321"
+              ]
+            },
+            "description": "Get NWS grid point data for Seattle coordinates"
+          }
+        },
+        {
+          "name": "Get Forecast - Seattle",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains properties', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('properties');",
+                  "});",
+                  "",
+                  "pm.test('Properties contain forecast periods', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const props = jsonData.properties;",
+                  "    pm.expect(props).to.have.property('periods');",
+                  "    pm.expect(props.periods).to.be.an('array');",
+                  "    pm.expect(props.periods.length).to.be.greaterThan(0);",
+                  "});",
+                  "",
+                  "pm.test('Forecast periods have required fields', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const firstPeriod = jsonData.properties.periods[0];",
+                  "    pm.expect(firstPeriod).to.have.property('name');",
+                  "    pm.expect(firstPeriod).to.have.property('temperature');",
+                  "    pm.expect(firstPeriod).to.have.property('temperatureUnit');",
+                  "    pm.expect(firstPeriod).to.have.property('shortForecast');",
+                  "    pm.expect(firstPeriod).to.have.property('detailedForecast');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "WeatherApp/1.0 IntegrationTest"
+              },
+              {
+                "key": "Accept",
+                "value": "application/geo+json"
+              }
+            ],
+            "url": {
+              "raw": "{{forecastUrl}}",
+              "host": [
+                "{{forecastUrl}}"
+              ]
+            },
+            "description": "Get forecast data from URL returned by grid points endpoint"
+          }
+        },
+        {
+          "name": "Get Grid Points - Boston",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response structure is valid', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('properties');",
+                  "    pm.expect(jsonData.properties).to.have.property('forecast');",
+                  "    pm.expect(jsonData.properties).to.have.property('forecastHourly');",
+                  "    pm.expect(jsonData.properties).to.have.property('observationStations');",
+                  "});",
+                  "",
+                  "pm.test('Grid identifiers are present', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const props = jsonData.properties;",
+                  "    pm.expect(props).to.have.property('gridId');",
+                  "    pm.expect(props).to.have.property('gridX');",
+                  "    pm.expect(props).to.have.property('gridY');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "User-Agent",
+                "value": "WeatherApp/1.0 IntegrationTest"
+              },
+              {
+                "key": "Accept",
+                "value": "application/geo+json"
+              }
+            ],
+            "url": {
+              "raw": "https://api.weather.gov/points/42.3601,-71.0589",
+              "protocol": "https",
+              "host": [
+                "api",
+                "weather",
+                "gov"
+              ],
+              "path": [
+                "points",
+                "42.3601,-71.0589"
+              ]
+            },
+            "description": "Get NWS grid point data for Boston coordinates"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "forecastUrl",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

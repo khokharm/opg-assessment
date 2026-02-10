@@ -1,0 +1,512 @@
+{
+  "info": {
+    "name": "Backend API Integration Tests",
+    "description": "Automated integration tests for backend APIs including auth, weather, and user cities",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response has status field', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('status');",
+              "    pm.expect(jsonData.status).to.equal('ok');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "Register User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('Response contains user data', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('user');",
+              "    pm.expect(jsonData.user).to.have.property('email');",
+              "    pm.expect(jsonData.user).to.have.property('username');",
+              "    pm.expect(jsonData.user.email).to.equal('integration-test@example.com');",
+              "});",
+              "",
+              "pm.test('Password is not returned', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.user).to.not.have.property('password');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"integration-test@example.com\",\n  \"password\": \"TestPassword123!\",\n  \"username\": \"integrationtester\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "register"]
+        }
+      }
+    },
+    {
+      "name": "Login User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response contains user data', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('user');",
+              "    pm.expect(jsonData.user).to.have.property('email');",
+              "    pm.expect(jsonData.user.email).to.equal('integration-test@example.com');",
+              "});",
+              "",
+              "pm.test('Cookie is set', function () {",
+              "    pm.expect(pm.cookies.has('token')).to.be.true;",
+              "});",
+              "",
+              "// Store cookie for subsequent requests",
+              "pm.collectionVariables.set('authCookie', pm.cookies.get('token'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"integration-test@example.com\",\n  \"password\": \"TestPassword123!\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "Get Current User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('User data is returned', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('email');",
+              "    pm.expect(jsonData).to.have.property('username');",
+              "    pm.expect(jsonData.email).to.equal('integration-test@example.com');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/me",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "me"]
+        }
+      }
+    },
+    {
+      "name": "Search Locations",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response is an array', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "});",
+              "",
+              "pm.test('Results have required location fields', function () {",
+              "    const jsonData = pm.response.json();",
+              "    if (jsonData.length > 0) {",
+              "        const firstResult = jsonData[0];",
+              "        pm.expect(firstResult).to.have.property('id');",
+              "        pm.expect(firstResult).to.have.property('name');",
+              "        pm.expect(firstResult).to.have.property('lat');",
+              "        pm.expect(firstResult).to.have.property('lon');",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/search?query=Seattle",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "search"],
+          "query": [
+            {
+              "key": "query",
+              "value": "Seattle"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Weather for Single Location",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Weather data structure is valid', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('location');",
+              "    pm.expect(jsonData).to.have.property('forecast');",
+              "    pm.expect(jsonData).to.have.property('lastUpdated');",
+              "});",
+              "",
+              "pm.test('Location has required fields', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.location).to.have.property('name');",
+              "    pm.expect(jsonData.location).to.have.property('lat');",
+              "    pm.expect(jsonData.location).to.have.property('lon');",
+              "});",
+              "",
+              "pm.test('Forecast is an array with data', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.forecast).to.be.an('array');",
+              "    pm.expect(jsonData.forecast.length).to.be.greaterThan(0);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/weather?lat=47.6062&lon=-122.3321&name=Seattle, WA",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "weather"],
+          "query": [
+            {
+              "key": "lat",
+              "value": "47.6062"
+            },
+            {
+              "key": "lon",
+              "value": "-122.3321"
+            },
+            {
+              "key": "name",
+              "value": "Seattle, WA"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Weather for Multiple Locations",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response is an array', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "    pm.expect(jsonData.length).to.equal(2);",
+              "});",
+              "",
+              "pm.test('Each result has weather data', function () {",
+              "    const jsonData = pm.response.json();",
+              "    jsonData.forEach(result => {",
+              "        pm.expect(result).to.have.property('location');",
+              "        pm.expect(result).to.have.property('forecast');",
+              "        pm.expect(result.forecast).to.be.an('array');",
+              "    });",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"locations\": [\n    {\n      \"id\": \"47.6062_-122.3321\",\n      \"name\": \"Seattle, WA\",\n      \"lat\": 47.6062,\n      \"lon\": -122.3321\n    },\n    {\n      \"id\": \"42.3601_-71.0589\",\n      \"name\": \"Boston, MA\",\n      \"lat\": 42.3601,\n      \"lon\": -71.0589\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/weather/multiple",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "weather", "multiple"]
+        }
+      }
+    },
+    {
+      "name": "Add City to User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200 or 201', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              "",
+              "pm.test('City was added', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('cities');",
+              "    pm.expect(jsonData.cities).to.be.an('array');",
+              "    ",
+              "    const addedCity = jsonData.cities.find(c => c.id === '47.6062_-122.3321');",
+              "    pm.expect(addedCity).to.exist;",
+              "    pm.expect(addedCity.name).to.equal('Seattle, WA');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"47.6062_-122.3321\",\n  \"name\": \"Seattle, WA\",\n  \"lat\": 47.6062,\n  \"lon\": -122.3321\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/user/cities",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "user", "cities"]
+        }
+      }
+    },
+    {
+      "name": "Get User Cities",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response contains cities array', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('cities');",
+              "    pm.expect(jsonData.cities).to.be.an('array');",
+              "});",
+              "",
+              "pm.test('Added city exists in list', function () {",
+              "    const jsonData = pm.response.json();",
+              "    const seattleCity = jsonData.cities.find(c => c.id === '47.6062_-122.3321');",
+              "    pm.expect(seattleCity).to.exist;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/user/cities",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "user", "cities"]
+        }
+      }
+    },
+    {
+      "name": "Get Weather for User Cities",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response is an array', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "});",
+              "",
+              "pm.test('Weather data for tracked cities', function () {",
+              "    const jsonData = pm.response.json();",
+              "    if (jsonData.length > 0) {",
+              "        const firstCity = jsonData[0];",
+              "        pm.expect(firstCity).to.have.property('location');",
+              "        pm.expect(firstCity).to.have.property('forecast');",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/user/cities/weather",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "user", "cities", "weather"]
+        }
+      }
+    },
+    {
+      "name": "Remove City from User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('City was removed', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('cities');",
+              "    ",
+              "    const removedCity = jsonData.cities.find(c => c.id === '47.6062_-122.3321');",
+              "    pm.expect(removedCity).to.not.exist;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/user/cities/47.6062_-122.3321",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "user", "cities", "47.6062_-122.3321"]
+        }
+      }
+    },
+    {
+      "name": "Logout",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Success message returned', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('message');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/logout",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "logout"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "authCookie",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
