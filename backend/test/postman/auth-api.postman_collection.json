@@ -1,0 +1,243 @@
+{
+  "info": {
+    "name": "Weather Tracker - Auth API",
+    "description": "API collection for Weather Tracker authentication and user cities management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:4000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"username\": \"testuser\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/register",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/login",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/me",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/logout",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "logout"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User Cities",
+      "item": [
+        {
+          "name": "Add City",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"42.3601_-71.0589\",\n  \"name\": \"Boston, MA\",\n  \"lat\": 42.3601,\n  \"lon\": -71.0589\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/user/cities",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "user", "cities"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Tracked Cities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/user/cities",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "user", "cities"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Weather for Tracked Cities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/user/cities/weather",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "user", "cities", "weather"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove City",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/user/cities/42.3601_-71.0589",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "user", "cities", "42.3601_-71.0589"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Weather (Public)",
+      "item": [
+        {
+          "name": "Get Weather",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/weather?lat=42.3601&lon=-71.0589&name=Boston, MA",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "weather"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "42.3601"
+                },
+                {
+                  "key": "lon",
+                  "value": "-71.0589"
+                },
+                {
+                  "key": "name",
+                  "value": "Boston, MA"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Locations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/search?query=Boston",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "search"],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "Boston"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Multiple Weather",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"locations\": [\n    {\n      \"id\": \"42.3601_-71.0589\",\n      \"name\": \"Boston, MA\",\n      \"lat\": 42.3601,\n      \"lon\": -71.0589\n    },\n    {\n      \"id\": \"40.7128_-74.0060\",\n      \"name\": \"New York, NY\",\n      \"lat\": 40.7128,\n      \"lon\": -74.0060\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/weather/multiple",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "weather", "multiple"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{BASE_URL}}/health",
+          "host": ["{{BASE_URL}}"],
+          "path": ["health"]
+        }
+      },
+      "response": []
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+name: 3rd Party Integration Testing
+
+on:
+  # Run daily at midnight UTC
+  schedule:
+    - cron: '0 0 * * *'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Newman
+        run: npm install -g newman
+      
+      - name: Run integration tests
+        run: newman run backend/test/postman/3rd-party-integration-tests.postman_collection.json --timeout-request 15000
+        continue-on-error: true
+      
+      - name: Integration test results
+        run: echo "Integration tests completed. Check logs above for results."

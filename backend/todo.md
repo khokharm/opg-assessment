@@ -1,0 +1,3 @@
+- Add user and authenication 
+- Add zod validators 
+- Add Cors and other security measures

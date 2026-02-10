@@ -1,0 +1,126 @@
+{
+  "info": {
+    "name": "OPG Assessment Backend API",
+    "description": "Local API collection for health + weather endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Health check endpoint."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Weather",
+      "item": [
+        {
+          "name": "GET /api/weather (single location)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/weather?lat=38.8977&lon=-77.0365&name=White%20House",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "weather"
+              ],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "38.8977"
+                },
+                {
+                  "key": "lon",
+                  "value": "-77.0365"
+                },
+                {
+                  "key": "name",
+                  "value": "White House",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Fetch weather (forecast + current if available) for a single coordinate."
+          }
+        },
+        {
+          "name": "POST /api/weather/multiple",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"locations\": [\n    { \"id\": \"dc\", \"name\": \"Washington DC\", \"lat\": 38.9072, \"lon\": -77.0369 },\n    { \"id\": \"nyc\", \"name\": \"New York City\", \"lat\": 40.7128, \"lon\": -74.0060 }\n  ]\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/weather/multiple",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "weather",
+                "multiple"
+              ]
+            },
+            "description": "Fetch weather for multiple locations in parallel."
+          }
+        },
+        {
+          "name": "GET /api/search (locations)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/search?query=Seattle",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "Seattle"
+                }
+              ]
+            },
+            "description": "Search locations via Nominatim (US-only) and return normalized Location objects."
+          }
+        }
+      ]
+    }
+  ]
+}

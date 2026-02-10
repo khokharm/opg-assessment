@@ -1,0 +1,6 @@
+# Ignore MongoDB data volumes
+mongodb_data/
+data/
+
+# Ignore any local environment overrides
+.env.local

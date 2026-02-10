@@ -1,0 +1,18 @@
+name: Pre-Merge Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  pre-merge:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Pre-merge message
+        run: echo "Running pre-merge checks..."

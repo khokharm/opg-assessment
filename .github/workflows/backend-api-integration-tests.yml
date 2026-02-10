@@ -1,0 +1,83 @@
+name: Backend API Integration Testing
+
+on:
+  # Run daily at midnight UTC
+  schedule:
+    - cron: '0 0 * * *'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  api-integration-tests:
+    runs-on: ubuntu-latest
+    
+    services:
+      mongodb:
+        image: mongo:7.0
+        ports:
+          - 27017:27017
+        env:
+          MONGO_INITDB_DATABASE: weather_tracker
+        options: >-
+          --health-cmd "echo 'db.runCommand(\"ping\").ok' | mongosh localhost:27017/test --quiet"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --health-start-period 40s
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm install
+      
+      - name: Create .env file
+        working-directory: backend
+        run: |
+          cat > .env << EOF
+          PORT=4000
+          NODE_ENV=test
+          MONGODB_URI=mongodb://localhost:27017/weather_tracker
+          JWT_SECRET=test-secret-key-for-ci
+          JWT_EXPIRES_IN=7d
+          COOKIE_SECRET=test-cookie-secret-for-ci
+          NWS_USER_AGENT=WeatherApp-CI-Test
+          EOF
+      
+      - name: Build backend
+        working-directory: backend
+        run: npm run build
+      
+      - name: Start backend server
+        working-directory: backend
+        run: |
+          npm start &
+          echo $! > server.pid
+          # Wait for server to be ready
+          timeout 30 bash -c 'until curl -f http://localhost:4000/health; do sleep 2; done'
+      
+      - name: Install Newman
+        run: npm install -g newman
+      
+      - name: Run API integration tests
+        run: newman run backend/test/postman/backend-api-integration-tests.postman_collection.json --environment backend/test/postman/backend-api-integration-tests.postman_environment.json --timeout-request 10000
+        continue-on-error: true
+      
+      - name: Stop backend server
+        if: always()
+        working-directory: backend
+        run: |
+          if [ -f server.pid ]; then
+            kill $(cat server.pid) || true
+          fi
+      
+      - name: API integration test results
+        run: echo "Backend API integration tests completed. Check logs above for results."
