@@ -1,5 +1,6 @@
 import express, { type NextFunction, type Request, type Response } from "express";
 import cors from "cors";
+import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import healthRouter from "./routes/health";
 import weatherRouter from "./routes/weather";
@@ -9,6 +10,14 @@ import { authenticate } from "./middleware/auth";
 
 export const createApp = () => {
   const app = express();
+
+  // Helmet security middleware - sets various HTTP headers
+  app.use(
+    helmet({
+      contentSecurityPolicy: false, // Disable CSP for API (enable if serving HTML)
+      crossOriginEmbedderPolicy: false, // Allow embedding resources
+    })
+  );
 
   app.disable("x-powered-by");
 
