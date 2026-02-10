@@ -18,9 +18,9 @@ export default function LogoutPage() {
 
     try {
       await logout();
-      // Redirect to login page after successful logout
+      // Redirect to home page after successful logout
       setTimeout(() => {
-        router.push("/login");
+        router.push("/");
       }, 1000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to logout");
@@ -28,10 +28,10 @@ export default function LogoutPage() {
     }
   };
 
-  // If user is not logged in, redirect to login
+  // If user is not logged in, redirect to home page
   useEffect(() => {
     if (!user && !loggingOut) {
-      router.push("/login");
+      router.push("/");
     }
   }, [user, loggingOut, router]);
 

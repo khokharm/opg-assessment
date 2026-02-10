@@ -45,7 +45,7 @@ export default function RegisterPage() {
 
     try {
       await register(email, password, username);
-      router.push("/"); // Redirect to home page after successful registration
+      router.push("/dashboard"); // Redirect to dashboard after successful registration
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to register");
     } finally {

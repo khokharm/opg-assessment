@@ -9,9 +9,10 @@ interface WeatherData {
 
 interface WeatherCardListProps {
   weatherData: WeatherData[];
+  onDeleteLocation?: (location: string) => void;
 }
 
-export default function WeatherCardList({ weatherData }: WeatherCardListProps) {
+export default function WeatherCardList({ weatherData, onDeleteLocation }: WeatherCardListProps) {
   return (
     <div className="w-full max-w-7xl mx-auto p-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -20,6 +21,7 @@ export default function WeatherCardList({ weatherData }: WeatherCardListProps) {
             key={`${data.location}-${index}`}
             location={data.location}
             temperature={data.temperature}
+            onDelete={onDeleteLocation ? () => onDeleteLocation(data.location) : undefined}
           />
         ))}
       </div>

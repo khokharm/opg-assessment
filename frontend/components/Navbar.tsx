@@ -1,17 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,11 +21,16 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
 
 export default function Navbar() {
   const { user, loading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // Trigger animation after component mounts
+    setIsVisible(true);
+  }, []);
 
   const getInitials = (username: string) => {
     return username
@@ -45,12 +42,16 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/80">
+    <header 
+      className={`sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/80 transition-transform duration-1000 ease-out ${
+        isVisible ? 'translate-x-0' : '-translate-x-full'
+      }`}
+    >
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href={user ? "/dashboard" : "/"} className="flex items-center space-x-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-blue-600 to-indigo-600">
                 <svg
                   className="h-5 w-5 text-white"
@@ -67,70 +68,10 @@ export default function Navbar() {
                 </svg>
               </div>
               <span className="hidden font-bold text-xl md:inline-block bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Weather Dashboard
+                weather.ai
               </span>
             </Link>
 
-            {/* Desktop Navigation */}
-            <NavigationMenu className="hidden lg:flex">
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <Link href="/" legacyBehavior passHref>
-                    <NavigationMenuLink
-                      className={cn(
-                        "group inline-flex h-10 w-max items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50"
-                      )}
-                    >
-                      Home
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>Features</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
-                      <li className="row-span-3">
-                        <NavigationMenuLink asChild>
-                          <a
-                            className="flex h-full w-full select-none flex-col justify-end rounded-md bg-linear-to-b from-blue-500/50 to-indigo-500/50 p-6 no-underline outline-none focus:shadow-md"
-                            href="/"
-                          >
-                            <div className="mb-2 mt-4 text-lg font-medium text-white">
-                              Real-Time Weather
-                            </div>
-                            <p className="text-sm leading-tight text-white/90">
-                              Get accurate weather data for cities around the world instantly.
-                            </p>
-                          </a>
-                        </NavigationMenuLink>
-                      </li>
-                      <ListItem href="/" title="Smart Search">
-                        Find any city with intelligent autocomplete
-                      </ListItem>
-                      <ListItem href="/" title="Mobile Ready">
-                        Access from any device, anywhere
-                      </ListItem>
-                      <ListItem href="/" title="Beautiful UI">
-                        Modern, clean interface built with React
-                      </ListItem>
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                  <Link href="/" legacyBehavior passHref>
-                    <NavigationMenuLink
-                      className={cn(
-                        "group inline-flex h-10 w-max items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50"
-                      )}
-                    >
-                      About
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
           </div>
 
           {/* Desktop Auth Section */}
@@ -165,7 +106,7 @@ export default function Navbar() {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link href="/" className="cursor-pointer">
+                      <Link href="/dashboard" className="cursor-pointer">
                         <svg
                           className="mr-2 h-4 w-4"
                           fill="none"
@@ -271,7 +212,7 @@ export default function Navbar() {
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <SheetContent side="right" className="w-[300px] sm:w-[400px] data-[state=open]:duration-5000 data-[state=closed]:duration-500">
                 <SheetHeader>
                   <SheetTitle className="flex items-center gap-2">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-blue-600 to-indigo-600">
@@ -289,10 +230,10 @@ export default function Navbar() {
                         />
                       </svg>
                     </div>
-                    Weather Dashboard
+                    weather.ai
                   </SheetTitle>
                   <SheetDescription>
-                    Navigate through the app
+                    AI-powered weather predictions
                   </SheetDescription>
                 </SheetHeader>
 
@@ -314,30 +255,9 @@ export default function Navbar() {
                   )}
 
                   <nav className="flex flex-col gap-2">
-                    <Link
-                      href="/"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-100"
-                    >
-                      <svg
-                        className="h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                        />
-                      </svg>
-                      Home
-                    </Link>
-
                     {user && (
                       <Link
-                        href="/"
+                        href="/dashboard"
                         onClick={() => setMobileMenuOpen(false)}
                         className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-100"
                       >
@@ -357,56 +277,6 @@ export default function Navbar() {
                         Dashboard
                       </Link>
                     )}
-
-                    <div className="my-2 border-t" />
-
-                    <div className="px-3 py-2">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Features
-                      </p>
-                    </div>
-
-                    <Link
-                      href="/"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 rounded-md px-3 py-2 text-sm hover:bg-gray-100"
-                    >
-                      <svg
-                        className="h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                        />
-                      </svg>
-                      Smart Search
-                    </Link>
-
-                    <Link
-                      href="/"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 rounded-md px-3 py-2 text-sm hover:bg-gray-100"
-                    >
-                      <svg
-                        className="h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
-                        />
-                      </svg>
-                      Mobile Ready
-                    </Link>
 
                     {user && (
                       <>
@@ -458,36 +328,3 @@ export default function Navbar() {
     </header>
   );
 }
-
-const ListItem = ({
-  className,
-  title,
-  children,
-  href,
-  ...props
-}: {
-  className?: string;
-  title: string;
-  children: React.ReactNode;
-  href: string;
-}) => {
-  return (
-    <li>
-      <NavigationMenuLink asChild>
-        <a
-          href={href}
-          className={cn(
-            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900",
-            className
-          )}
-          {...props}
-        >
-          <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-            {children}
-          </p>
-        </a>
-      </NavigationMenuLink>
-    </li>
-  );
-};
