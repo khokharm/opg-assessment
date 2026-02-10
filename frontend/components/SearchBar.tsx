@@ -88,9 +88,11 @@ export const SearchBar = ({
       e.preventDefault();
       if (selectedIndex >= 0 && suggestions[selectedIndex]) {
         handleSuggestionClick(suggestions[selectedIndex]);
+        setQuery("");
       } else if (query) {
         onSearch?.(query);
         setIsOpen(false);
+        setQuery("");
       }
     } else if (e.key === "Escape") {
       setIsOpen(false);
