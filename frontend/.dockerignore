@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+.gitignore
+.DS_Store
+README.md
+.storybook
+stories
+*.md
+vitest.config.ts
+vitest.shims.d.ts

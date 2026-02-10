@@ -1,0 +1,12 @@
+node_modules
+dist
+.env
+.env.local
+.DS_Store
+.git
+.gitignore
+README.md
+test
+ai_notes
+*.md
+todo.md
